@@ -1,61 +1,136 @@
-* `Zadanie 1 - REST-SERVICE`
+`Zadanie 1 - REST-SERVICE`
 
 Napisać aplikację, która stworzy restowy controller i wystawi metodę get pod adresem
 względnym /greeting z obsługą parametru name z domyślną wartościa 'World. Metoda powinna zwracać
 tekst "Hello " + name. Obowiązkowo testy integracyjne.
 
 Zależności:
+* spring-boot-starter-web
+* spring-boot-starter-test
+* com.jayway.jsonpath
 
-spring-boot-starter-web
+`Zadanie 2 - SPRING BOOT`
 
-spring-boot-starter-test
-
-com.jayway.jsonpath
-
-* `Zadanie 2 - SPRING BOOT`
-
-Napisać HelloController, który wyświetli w konsoli powitanie oraz wszystkie definicje stworzonych beanów + testy integracyjne.
+Napisać HelloController, 
+który wyświetli w konsoli powitanie oraz 
+wszystkie definicje stworzonych beanów + 
+testy integracyjne.
 
 Zależności:
 
-spring-boot-starter-web
+* spring-boot-starter-web
+* spring-boot-starter-actuator
+* spring-boot-starter-test
+* spring-test
 
-spring-boot-starter-actuator
-
-spring-boot-starter-test
-
-* `Zadanie 3 - JDBC-TEMPLATE`
+`Zadanie 3 - JDBC-TEMPLATE`
 
 wykorzystać JDBCTemplate do:
+* zdropowania tabeli jeżeli istnieje
+* stworzenia tabeli
+* uzupełnienia tabeli 
+* wykonania selecta
+* wykonania batchowego inserta
+* przepisania danych z tabeli do modelu javowego
 
-zdropowania tabeli jeżeli istnieje
+Zależności:
+* spring-boot-starter-jdbc
 
-stworzenia tabeli
+`Zadanie 4 - JPA`
 
-uzupełnienia tabeli 
+Zapisać encję z użyciem repozytorium ze spring data i stworzenie warstwy dao z managerem.
 
-wykonania selecta
+Zależności:
 
-wykonania batchowego inserta
+spring-boot-starter-data-jpa
 
-przepisania danych z tabeli do modelu javowego
+spring-data
 
-* `Zadanie 4 - JPA`
+com.h2database
 
-* `Zadanie 5 - SCHEDULER`
+`Zadanie 5 - SCHEDULER`
 
-* `Zadanie 6 - TRANSACTIONS`
+Stworzenie konfigurowalnego przez properties schedulera z wykorzystaniem crona:
+https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
 
-* `Zadanie 7 - ASYNC`
+Zależności:
 
-* `Zadanie 8 - BATCH`
+spring-context
 
-* `Zadanie 9 - CACHE`
+`Zadanie 6 - TRANSACTIONS`
 
-* `Zadanie 10 - VALIDATOR`
+Prosta aplikacja z wykorzystaniem JDBC template oraz adnotacji @Transactional
 
-* `Zadanie 11 - FILE-UPLOADER`
+Zależności:
+* com.h2database
 
-* `Zadanie 12 - JMS`
+`Zadanie 7 - ASYNC`
 
-* `Zadanie 13 - NEO4J`
+Aplikacja mająca na celu uruchomienie w puli wątków asynchronicznych metod, 
+oraz sprawdzenie, czy wszystkie się wykonały. 
+Wykorzystanie restTemplate do wywołania zdalnie dowolnego serwisu restowego.
+
+Zależności:
+* spring-web
+
+`Zadanie 8 - BATCH`
+Wzorując się na:
+http://malsolo.com/blog4java/?p=260
+będziemy chcieli napisać aplikację, która batchowo zaczyta nam dane do csv i zapisze w bazie
+z wykorzystaniem jobów
+
+Wykorzystanie:
+* JdbcBatchItemWriter
+* ItemProcessor
+* FlatFileItemReader
+* jdbcTemplate
+* JobExecutionListenerSupport
+
+Zależności:
+* spring-boot-starter-batch
+
+`Zadanie 9 - CACHE`
+
+Napisać prosty mechanizm pobierania danych z wykorzystaniem @Cacheable
+
+Zależności:
+* spring-boot-starter-cache
+
+`Zadanie 10 - VALIDATOR`
+
+Naisać walidator formularza rozszerzając klasę WebMvcConfigurerAdapter z testami integracyjnymi
+i adnotacjami javax.validation.constraints
+
+Zależności:
+* spring-boot-starter-thymeleaf
+* hibernate-validator 
+
+`Zadanie 11 - FILE-UPLOADER`
+
+Napisać aplikację, która będzie potrafiła 
+* pobrać plik wskazany przez użytkownika poprzez formularz
+* wylistować pobrane pliki
+* ściągnąć plik wskazany przez użytkownika
+* usunać wszystkie wgrane pliki
+
+Zależności:
+* spring-boot-starter-thymeleaf
+
+`Zadanie 12 - JMS`
+
+Napisać aplikacje, która będzie wrzucać wiadomośc dowolnego typu na kolejkę jmsową oraz wyświetlać jej zawartość
+z wykorzystaniem JmsListenera
+
+Zależności:
+* spring-boot-starter-activemq
+* activemq-broker
+* jackson-databind
+
+`Zadanie 13 - NEO4J`
+Do zrobienia
+* zamodelować encję dla neo4j
+* wykorzystać repozytorium neo4j do pobierania i wyświetlania danych
+https://neo4j.com/online_training/graphdatabases/
+
+Zależności:
+* spring-boot-starter-data-neo4j
