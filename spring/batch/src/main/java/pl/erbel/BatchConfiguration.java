@@ -14,7 +14,6 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -25,7 +24,6 @@ import javax.sql.DataSource;
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    @Qualifier("dataSource")
     @Autowired
     DataSource dataSource;
 
@@ -51,12 +49,9 @@ public class BatchConfiguration {
 
     @Bean
     FlatFileItemReader<Jednorozec> jednorozecReader() {
-        FlatFileItemReader<Jednorozec> flatFileItemReader = new FlatFileItemReader();
+        FlatFileItemReader<Jednorozec> flatFileItemReader = new FlatFileItemReader<Jednorozec>();
         flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv"));
         flatFileItemReader.setLinesToSkip(1);
-        new DelimitedLineTokenizer() {{
-
-        }};
         flatFileItemReader.setLineMapper(new DefaultLineMapper<Jednorozec>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
                 setNames(new String[]{"id",
@@ -79,9 +74,9 @@ public class BatchConfiguration {
     }
 
     @Bean
-    Job saveJednorozec() {
+    Job saveJednorozec(JednorozecItemWriteListener listener) {
         return jobBuilderFactory.get("saveJednorozec").
-                listener(new JednorozecItemWriteListener()).
+                listener(listener).
                 flow(firstMigrationStep()).
                 end().
                 build();

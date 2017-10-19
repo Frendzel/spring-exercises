@@ -23,12 +23,5 @@ public class App implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        jdbcTemplate.execute("create table jednorozec (\n" +
-                "\tid INT,\n" +
-                "\timie VARCHAR(50),\n" +
-                "\tnazwisko VARCHAR(50),\n" +
-                "\temail VARCHAR(50),\n" +
-                "\tplec VARCHAR(50)\n" +
-                ")");
     }
 }

@@ -1,3 +1,5 @@
+drop table jednorozec if exists;
+
 create table jednorozec (
 	id INT,
 	imie VARCHAR(50),

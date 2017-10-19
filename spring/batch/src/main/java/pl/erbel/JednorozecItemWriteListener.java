@@ -21,7 +21,7 @@ public class JednorozecItemWriteListener extends JobExecutionListenerSupport {
 
     @Override
     public void afterJob(JobExecution jobExecution) {
-        LOGGER.info("jobListener");
+        LOGGER.info("listener! ");
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             List<Jednorozec> zwierzaki = jdbcTemplate.query("SELECT * FROM jednorozec",
                     (rs, number) ->
