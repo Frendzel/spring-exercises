@@ -6,6 +6,8 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
@@ -27,11 +29,15 @@ import javax.sql.DataSource;
 //JobParametersValidator
 //JobLauncher https://gist.github.com/benas/9355801
 //https://docs.spring.io/spring-batch/trunk/reference/html/configureJob.html#advancedMetaData
+//Read properties from file
+//Add tests
+//https://docs.spring.io/spring-batch/trunk/reference/html/testing.html
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
 
     @Qualifier("dataSource")
+    //name of class which implements interface as a qualifier for candidate beans when autowiring
     @Autowired
     DataSource dataSource;
 
@@ -40,6 +46,12 @@ public class BatchConfiguration {
 
     @Autowired
     StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    JednorozecItemReadListener jednorozecItemReadListener;
+
+    @Autowired
+    JednorozecItemWriteListener JednorozecItemWriteListener;
 
     @Bean
     JdbcBatchItemWriter<Jednorozec> jednorozecWriter() {
@@ -61,23 +73,24 @@ public class BatchConfiguration {
         FlatFileItemReader<Jednorozec> flatFileItemReader = new FlatFileItemReader<Jednorozec>();
         flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv"));
         flatFileItemReader.setLinesToSkip(1);
-
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
-        delimitedLineTokenizer.setNames(new String[]{"id",
-                "imie",
-                "nazwisko",
-                "email",
-                "plec"});
+        delimitedLineTokenizer.setStrict(false);
+        delimitedLineTokenizer.setNames(new String[]
+                {"id",
+                        "imie",
+                        "nazwisko",
+                        "email",
+                        "plec"});
 
         BeanWrapperFieldSetMapper<Jednorozec> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
         fieldSetMapper.setTargetType(Jednorozec.class);
+        fieldSetMapper.setStrict(false);
 
         DefaultLineMapper<Jednorozec> mapper = new DefaultLineMapper<>();
         mapper.setLineTokenizer(delimitedLineTokenizer);
         mapper.setFieldSetMapper(fieldSetMapper);
+
         flatFileItemReader.setLineMapper(mapper);
-
-
         return flatFileItemReader;
     }
 
@@ -87,11 +100,10 @@ public class BatchConfiguration {
     }
 
     @Bean
-    Job saveJednorozec(JednorozecItemWriteListener listener) {
+    Job saveJednorozec(JednorozecJobListener listener) {
         return jobBuilderFactory.get("saveJednorozec").
+                flow(firstMigrationStep()).end().
                 listener(listener).
-                flow(firstMigrationStep()).
-                end().
                 build();
     }
 
@@ -100,8 +112,10 @@ public class BatchConfiguration {
         return stepBuilderFactory.
                 get("firstMigrationStep").
                 <Jednorozec, Jednorozec>
-                chunk(100).
+                        chunk(10).
                 reader(jednorozecReader()).
+                listener(jednorozecItemReadListener).
+                listener(JednorozecItemWriteListener).
                 processor(processor()).
                 writer(jednorozecWriter()).
                 build();

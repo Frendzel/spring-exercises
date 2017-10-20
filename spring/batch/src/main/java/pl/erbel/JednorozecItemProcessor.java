@@ -10,7 +10,7 @@ public class JednorozecItemProcessor implements ItemProcessor<Jednorozec, Jednor
 
     @Override
     public Jednorozec process(Jednorozec item) throws Exception {
-        LOGGER.debug("Processing object: " + item);
+        LOGGER.info("Processing object: " + item);
         return new Jednorozec(item.id, "Janusz", item.nazwisko, item.email, item.plec);
     }
 }
