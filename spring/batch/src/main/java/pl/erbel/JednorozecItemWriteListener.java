@@ -31,7 +31,6 @@ public class JednorozecItemWriteListener extends JobExecutionListenerSupport {
                                     rs.getString(4),
                                     rs.getString(5)));
             zwierzaki.forEach(System.out::println);
-            LOGGER.info(zwierzaki);
         }
     }
 

@@ -14,16 +14,24 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.sql.DataSource;
 
+//TODO
+//Reader Listener
+//Writer Listener
+//JobParametersValidator
+//JobLauncher https://gist.github.com/benas/9355801
+//https://docs.spring.io/spring-batch/trunk/reference/html/configureJob.html#advancedMetaData
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
 
+    @Qualifier("dataSource")
     @Autowired
     DataSource dataSource;
 
@@ -44,6 +52,7 @@ public class BatchConfiguration {
                 ":nazwisko," +
                 ":email," +
                 ":plec)");
+        writer.afterPropertiesSet();
         return writer;
     }
 
@@ -52,19 +61,23 @@ public class BatchConfiguration {
         FlatFileItemReader<Jednorozec> flatFileItemReader = new FlatFileItemReader<Jednorozec>();
         flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv"));
         flatFileItemReader.setLinesToSkip(1);
-        flatFileItemReader.setLineMapper(new DefaultLineMapper<Jednorozec>() {{
-            setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[]{"id",
-                        "imie",
-                        "nazwisko",
-                        "email",
-                        "plec"});
-            }});
-            setFieldSetMapper(new BeanWrapperFieldSetMapper<Jednorozec>() {{
-                setTargetType(Jednorozec.class);
-            }});
 
-        }});
+        DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
+        delimitedLineTokenizer.setNames(new String[]{"id",
+                "imie",
+                "nazwisko",
+                "email",
+                "plec"});
+
+        BeanWrapperFieldSetMapper<Jednorozec> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(Jednorozec.class);
+
+        DefaultLineMapper<Jednorozec> mapper = new DefaultLineMapper<>();
+        mapper.setLineTokenizer(delimitedLineTokenizer);
+        mapper.setFieldSetMapper(fieldSetMapper);
+        flatFileItemReader.setLineMapper(mapper);
+
+
         return flatFileItemReader;
     }
 
