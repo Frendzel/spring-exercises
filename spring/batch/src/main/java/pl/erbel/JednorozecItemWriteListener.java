@@ -12,9 +12,7 @@ public class JednorozecItemWriteListener implements ItemWriteListener<Jednorozec
     private static final Logger LOGGER = Logger.getLogger(JednorozecItemWriteListener.class);
 
     @Override
-    public void beforeWrite(List<? extends Jednorozec> items) {
-
-    }
+    public void beforeWrite(List<? extends Jednorozec> items) {}
 
     @Override
     public void afterWrite(List<? extends Jednorozec> items) {

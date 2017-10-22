@@ -8,6 +8,7 @@ public class JednorozecItemProcessor implements ItemProcessor<Jednorozec, Jednor
     private static final Logger LOGGER =
             Logger.getLogger(JednorozecItemProcessor.class);
 
+    // Procesor, który zmienia imie wszystkim jednorozcom na Janusz
     @Override
     public Jednorozec process(Jednorozec item) throws Exception {
         LOGGER.info("Processing object: " + item);

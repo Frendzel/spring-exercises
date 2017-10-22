@@ -26,7 +26,7 @@ public class JednorozecJobListener extends JobExecutionListenerSupport {
     @Override
     public void afterJob(JobExecution jobExecution) {
         LOGGER.info("listener! ");
-        if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
+        if (jobExecution.getStatus() == BatchStatus.COMPLETED) { // BatchStatus.COMPLETED ustawiany po wykonaniu joba
             List<Jednorozec> zwierzaki = jdbcTemplate.query("SELECT * FROM jednorozec",
                     (rs, number) ->
                             new Jednorozec(rs.getInt(1),

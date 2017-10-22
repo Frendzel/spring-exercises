@@ -6,8 +6,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
@@ -23,29 +21,28 @@ import org.springframework.core.io.ClassPathResource;
 
 import javax.sql.DataSource;
 
-//TODO
-//Reader Listener
-//Writer Listener
-//JobParametersValidator
-//JobLauncher https://gist.github.com/benas/9355801
-//https://docs.spring.io/spring-batch/trunk/reference/html/configureJob.html#advancedMetaData
-//Read properties from file
-//Add tests
-//https://docs.spring.io/spring-batch/trunk/reference/html/testing.html
+// TODO Properties @PropertySource
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    @Qualifier("dataSource")
-    //name of class which implements interface as a qualifier for candidate beans when autowiring
+
+    /* JOB składa się z wielu STEPów
+     * Każdy STEP składa się z implementacji:
+     * - ItemReadera
+     * - ItemWritera
+     * - Processora
+     */
+
+    @Qualifier("dataSource") // nazwa klasy implementującej podany interfejs użyta do wstrzyknięcia beana
     @Autowired
     DataSource dataSource;
 
-    @Autowired
-    JobBuilderFactory jobBuilderFactory;
+    @Autowired // builder użyty do utworzenia joba
+            JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
-    StepBuilderFactory stepBuilderFactory;
+    @Autowired // builder użyty do utworzenia stepa
+            StepBuilderFactory stepBuilderFactory;
 
     @Autowired
     JednorozecItemReadListener jednorozecItemReadListener;
@@ -55,37 +52,38 @@ public class BatchConfiguration {
 
     @Bean
     JdbcBatchItemWriter<Jednorozec> jednorozecWriter() {
-        JdbcBatchItemWriter<Jednorozec> writer = new JdbcBatchItemWriter();
-        writer.setDataSource(dataSource);
+        JdbcBatchItemWriter<Jednorozec> writer = new JdbcBatchItemWriter(); // przykładowa implementacja ItemWritera
+        writer.setDataSource(dataSource); // ustawienie namiarów na baze danych
         writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Jednorozec>());
+        // ustawienie sposobu podstawiania danych do uzupełnionego niżej sqla
         writer.setSql("INSERT INTO jednorozec (id,imie,nazwisko,email,plec) " +
                 "VALUES (:id," +
                 ":imie," +
                 ":nazwisko," +
                 ":email," +
                 ":plec)");
-        writer.afterPropertiesSet();
+        writer.afterPropertiesSet(); // walidacja porawności uzupełnionych danych
         return writer;
     }
 
     @Bean
     FlatFileItemReader<Jednorozec> jednorozecReader() {
+        // Przykładowa imlementacja iteam readaera zaczytująca z pliku csv
         FlatFileItemReader<Jednorozec> flatFileItemReader = new FlatFileItemReader<Jednorozec>();
-        flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv"));
-        flatFileItemReader.setLinesToSkip(1);
+        flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv")); //zaczytanie pliku csv z classpatha
+        flatFileItemReader.setLinesToSkip(1); // ominięcie nagłówka pliku csv
+        // Ustawienie tokenizera mapującego wartości kolumn
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
-        delimitedLineTokenizer.setStrict(false);
+        // Nazwu kolumn
         delimitedLineTokenizer.setNames(new String[]
-                {"id",
-                        "imie",
-                        "nazwisko",
-                        "email",
-                        "plec"});
+                {"id", "imie", "nazwisko", "email", "plec"});
 
+        // Ustawienie mappera tak aby wskazywał na docelową klasę
         BeanWrapperFieldSetMapper<Jednorozec> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
         fieldSetMapper.setTargetType(Jednorozec.class);
         fieldSetMapper.setStrict(false);
 
+        // Ustawienie tokenizera oraz mapera na domyślnej implementacji mapera dla implementacji itemReadera.
         DefaultLineMapper<Jednorozec> mapper = new DefaultLineMapper<>();
         mapper.setLineTokenizer(delimitedLineTokenizer);
         mapper.setFieldSetMapper(fieldSetMapper);
@@ -94,11 +92,15 @@ public class BatchConfiguration {
         return flatFileItemReader;
     }
 
+    // Deklaracja procesora, który jest odpowiedzialny za główny proces kroku danego Joba
     @Bean
     ItemProcessor<Jednorozec, Jednorozec> processor() {
         return new JednorozecItemProcessor();
     }
 
+    // Tworzymy Joba o danej nazwie i określonym flow, w którym podajem kroki, które będą wykonywane oraz listener
+    // Listener dostarcza implementacje beforeJob oraz afterJob, które umożliwiwają wykonanie instrukcji
+    // przed wykonaniem joba oraz po wykonaniu joba.
     @Bean
     Job saveJednorozec(JednorozecJobListener listener) {
         return jobBuilderFactory.get("saveJednorozec").
@@ -107,17 +109,18 @@ public class BatchConfiguration {
                 build();
     }
 
+    //Tworzymy step
     @Bean
     Step firstMigrationStep() {
         return stepBuilderFactory.
                 get("firstMigrationStep").
                 <Jednorozec, Jednorozec>
-                        chunk(10).
-                reader(jednorozecReader()).
-                listener(jednorozecItemReadListener).
-                listener(JednorozecItemWriteListener).
-                processor(processor()).
-                writer(jednorozecWriter()).
+                        chunk(10). //rozmiar pociętych danych
+                reader(jednorozecReader()). //itemReader
+                listener(jednorozecItemReadListener). //itemReaderListener
+                listener(JednorozecItemWriteListener). //itemWriterListener
+                processor(processor()). //processor
+                writer(jednorozecWriter()). //itemWriter
                 build();
     }
 
