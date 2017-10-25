@@ -8,10 +8,24 @@
     <packaging>pom</packaging>
     <name>spring</name>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <properties>
         <junit-version>4.12</junit-version>
-        <spring-boot-version>1.5.7.RELEASE</spring-boot-version>
+        <spring-boot-version>1.5.8.RELEASE</spring-boot-version>
         <spring-test-version>4.3.11.RELEASE</spring-test-version>
+        <apache-commons-version>3.6</apache-commons-version>
     </properties>
 
     <modules>
@@ -52,6 +66,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot-version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-commons-version}</version>
         </dependency>
     </dependencies>
 </project>

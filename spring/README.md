@@ -76,7 +76,8 @@ Zależności:
 `Zadanie 8 - BATCH`
 Wzorując się na:
 http://malsolo.com/blog4java/?p=260
-będziemy chcieli napisać aplikację, która batchowo zaczyta nam dane do csv i zapisze w bazie
+będziemy chcieli napisać aplikację, 
+która batchowo zaczyta nam dane z csv i zapisze w bazie
 z wykorzystaniem jobów
 
 Wykorzystanie:
@@ -105,16 +106,8 @@ Zależności:
 * spring-boot-starter-thymeleaf
 * hibernate-validator 
 
-`Zadanie 11 - FILE-UPLOADER`
-
-Napisać aplikację, która będzie potrafiła 
-* pobrać plik wskazany przez użytkownika poprzez formularz
-* wylistować pobrane pliki
-* ściągnąć plik wskazany przez użytkownika
-* usunać wszystkie wgrane pliki
-
-Zależności:
-* spring-boot-starter-thymeleaf
+`Zadanie 11 - MongoDB`
+Connector do MongoDB
 
 `Zadanie 12 - JMS`
 
@@ -126,7 +119,18 @@ Zależności:
 * activemq-broker
 * jackson-databind
 
-`Zadanie 13 - NEO4J`
+`Zadanie 13 - FILE-UPLOADER`
+
+Napisać aplikację, która będzie potrafiła 
+* pobrać plik wskazany przez użytkownika poprzez formularz
+* wylistować pobrane pliki
+* ściągnąć plik wskazany przez użytkownika
+* usunać wszystkie wgrane pliki
+
+Zależności:
+* spring-boot-starter-thymeleaf
+
+`Zadanie 14 - NEO4J`
 Do zrobienia
 * zamodelować encję dla neo4j
 * wykorzystać repozytorium neo4j do pobierania i wyświetlania danych
@@ -134,3 +138,4 @@ https://neo4j.com/online_training/graphdatabases/
 
 Zależności:
 * spring-boot-starter-data-neo4j
+
