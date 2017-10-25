@@ -25,9 +25,7 @@ public class CarMVCController extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.
-                addViewController("/success").
-                setViewName("success");
+        registry.addViewController("/success").setViewName("success");
     }
 
     @PostMapping("/")
@@ -46,12 +44,12 @@ public class CarMVCController extends WebMvcConfigurerAdapter {
         return "form";
     }
 
-    //TODO
-//    @RequestMapping(value = "cars", method = RequestMethod.GET)
-//    public String messages(Model model) {
-//        model.addAttribute("cars", carManager.findAll());
-//        return "cars/list";
-//    }
+    //http://www.thymeleaf.org/doc/articles/springmvcaccessdata.html
+    @RequestMapping(value = "cars", method = RequestMethod.GET)
+    public String messages(Model model) {
+        model.addAttribute("cars", carManager.findAll());
+        return "list";
+    }
 
 
 }
