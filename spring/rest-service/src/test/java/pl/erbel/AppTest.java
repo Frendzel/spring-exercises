@@ -1,38 +1,45 @@
 package pl.erbel;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class AppTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @Test
+    public void greetingDefaultTest() throws Exception {
+        mockMvc.perform(
+                get("/hello")).
+                andExpect(status().is(200)).
+                andExpect(jsonPath("name").
+                        value("world")).
+                andExpect(content().
+                        contentType(APPLICATION_JSON_UTF8_VALUE));
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
+    @Test
+    public void greetingNonDefaultTest() throws Exception {
+        mockMvc.perform(
+                get("/hello?name=costam")).
+                andExpect(status().is(200)).
+                andExpect(jsonPath("name").
+                        value("costam")).
+                andExpect(content().
+                        contentType(APPLICATION_JSON_UTF8_VALUE));
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
     }
 }

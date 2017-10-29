@@ -7,35 +7,50 @@
             <td>
                 <input type="text" th:field="*{owner}"/>
             </td>
-            <td></td>
+            <td>
+                <p th:if="${#fields.hasErrors('owner')}"
+                   th:errors="*{owner}">Incorrect date</p>
+            </td>
         </tr>
         <tr>
             <td>DOOR NUMBER:</td>
             <td>
                 <input type="number" th:field="*{doorNumber}"/>
             </td>
-            <td></td>
+            <td>
+                <p th:if="${#fields.hasErrors('doorNumber')}"
+                   th:errors="*{doorNumber}">Incorrect date</p>
+            </td>
         </tr>
         <tr>
             <td>COLOR:</td>
             <td>
                 <input type="text" th:field="*{color}"/>
             </td>
-            <td></td>
+            <td>
+                <p th:if="${#fields.hasErrors('color')}"
+                   th:errors="*{color}">Incorrect date</p>
+            </td>
         </tr>
         <tr>
             <td>TYPE:</td>
             <td>
                 <input type="text" th:field="*{type}"/>
             </td>
-            <td></td>
+            <td>
+                <p th:if="${#fields.hasErrors('type')}"
+                   th:errors="*{type}">Incorrect date</p>
+            </td>
         </tr>
         <tr>
             <td>BRAND:</td>
             <td>
                 <input type="text" th:field="*{brand}"/>
             </td>
-            <td></td>
+            <td>
+                <p th:if="${#fields.hasErrors('brand')}"
+                   th:errors="*{brand}">Incorrect date</p>
+            </td>
         </tr>
         <tr>
             <td>

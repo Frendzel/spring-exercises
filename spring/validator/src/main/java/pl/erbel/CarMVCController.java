@@ -46,7 +46,7 @@ public class CarMVCController extends WebMvcConfigurerAdapter {
 
     //http://www.thymeleaf.org/doc/articles/springmvcaccessdata.html
     @RequestMapping(value = "cars", method = RequestMethod.GET)
-    public String messages(Model model) {
+    public String cars(Model model) {
         model.addAttribute("cars", carManager.findAll());
         return "list";
     }

@@ -15,15 +15,27 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
+import java.util.concurrent.Executor;
 
 // TODO Properties @PropertySource
 @Configuration
+@EnableScheduling // Wlaczamy schedulera
 @EnableBatchProcessing
+@EnableAsync
+@PropertySource(value = {"classpath:/cron.properties",
+        "file:${user.home}/cron.properties"},
+        ignoreResourceNotFound = true)
 public class BatchConfiguration {
 
 
@@ -50,6 +62,30 @@ public class BatchConfiguration {
     @Autowired
     JednorozecItemWriteListener JednorozecItemWriteListener;
 
+    @Value("${save.jednorozec.cron}")
+    String saveJednorozecCronConfiguration;
+
+    public String getSaveJednorozecCronConfiguration() {
+        return saveJednorozecCronConfiguration;
+    }
+
+    public void setSaveJednorozecCronConfiguration(String saveJednorozecCronConfiguration) {
+        this.saveJednorozecCronConfiguration = saveJednorozecCronConfiguration;
+    }
+
+    @Scope()
+    @Bean("batchThreadPool" )
+    public Executor batchThreadPool() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setMaxPoolSize(10);
+        threadPoolTaskExecutor.setCorePoolSize(8);
+        threadPoolTaskExecutor.setThreadNamePrefix("sda:");
+        threadPoolTaskExecutor.setThreadGroupName("batch");
+        threadPoolTaskExecutor.setBeanName("batchThreadPool");
+        threadPoolTaskExecutor.initialize();
+        return threadPoolTaskExecutor;
+    }
+
     @Bean
     JdbcBatchItemWriter<Jednorozec> jednorozecWriter() {
         JdbcBatchItemWriter<Jednorozec> writer = new JdbcBatchItemWriter(); // przykładowa implementacja ItemWritera
@@ -73,10 +109,12 @@ public class BatchConfiguration {
         flatFileItemReader.setResource(new ClassPathResource("jednorozec.csv")); //zaczytanie pliku csv z classpatha
         flatFileItemReader.setLinesToSkip(1); // ominięcie nagłówka pliku csv
         // Ustawienie tokenizera mapującego wartości kolumn
+        flatFileItemReader.setStrict(false);
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
         // Nazwu kolumn
         delimitedLineTokenizer.setNames(new String[]
                 {"id", "imie", "nazwisko", "email", "plec"});
+        delimitedLineTokenizer.setStrict(false);
 
         // Ustawienie mappera tak aby wskazywał na docelową klasę
         BeanWrapperFieldSetMapper<Jednorozec> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
